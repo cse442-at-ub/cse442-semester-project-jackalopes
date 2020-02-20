@@ -6,6 +6,8 @@ import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen'
 
+import ChatListScreen from '../screens/ChatListScreen';
+
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Home';
 
@@ -47,6 +49,14 @@ export default function BottomTabNavigator({ navigation, route }) {
         options={{
           title: 'Edit Profile',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
+        />
+      <BottomTab.Screen
+        name="Chats"
+        component={ChatListScreen}
+        options={{
+            title: 'Chats',
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
         }}
       />
     </BottomTab.Navigator>
