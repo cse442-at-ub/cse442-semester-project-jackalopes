@@ -4,7 +4,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import EditProfileScreen from '../screens/EditProfileScreen'
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 import ChatListScreen from '../screens/ChatListScreen';
 
@@ -52,10 +52,10 @@ export default function BottomTabNavigator({ navigation, route }) {
         }}
         />
       <BottomTab.Screen
-        name="Chats"
+        name="Matches"
         component={ChatListScreen}
         options={{
-            title: 'Chats',
+            title: 'Matches',
             tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
         }}
       />
@@ -77,6 +77,8 @@ function getHeaderTitle(route) {
       return 'Edit Profile';
     case 'Chats':
       return 'Your Chats';
+    case 'Matches':
+      return 'Your Matches';
     default:
       return 'Set the header title in navigation/BottomTabNavigator.js';
   }
