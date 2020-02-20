@@ -75,5 +75,9 @@ function getHeaderTitle(route) {
       return 'Settings';
     case 'Edit Profile':
       return 'Edit Profile';
+    case 'Chats':
+      return 'Your Chats';
+    default:
+      return 'Set the header title in navigation/BottomTabNavigator.js';
   }
 }
