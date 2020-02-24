@@ -1,179 +1,119 @@
-import * as React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import * as WebBrowser from 'expo-web-browser';
+import React, { Component } from 'react'
+import Swiper from 'react-native-deck-swiper'
+import { Button, StyleSheet, Text, View } from 'react-native'
 
-import { MonoText } from '../components/StyledText';
-
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
-          />
-        </View>
-
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
-
-          <Text style={styles.getStartedText}>Open up the code for this screen:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change any of the text, save the file, and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>navigation/BottomTabNavigator.js</MonoText>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-HomeScreen.navigationOptions = {
-  header: null,
-};
-
-function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
-
-    return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use useful development
-        tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
+// demo purposes only
+function* range(start, end) {
+  for (let i = start; i <= end; i++) {
+    yield i
   }
 }
 
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/development-mode/');
-}
+const pageBackground = '#4FD0E9'
 
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/get-started/create-a-new-app/#making-your-first-change'
-  );
+export default class HomeScreen extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      cards: [...range(1, 50)],
+      swipedAllCards: false,
+      swipeDirection: '',
+      cardIndex: 0
+    }
+  }
+
+  renderCard = (card, index) => {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.text}>{card} - {index}</Text>
+      </View>
+    )
+  };
+
+  onSwiped = (type) => {
+    console.log(`on swiped ${type}`)
+  }
+
+  onSwipedAllCards = () => {
+    this.setState({
+      swipedAllCards: true
+    })
+  };
+
+  swipeLeft = () => {
+    this.swiper.swipeLeft()
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.container}>
+          <Swiper
+            ref={swiper => {
+              this.swiper = swiper
+            }}
+            style={styles.swiper}
+            onSwiped={() => this.onSwiped('general')}
+            onSwipedLeft={() => this.onSwiped('left')}
+            onSwipedRight={() => this.onSwiped('right')}
+            onSwipedTop={() => this.onSwiped('top')}
+            onSwipedBottom={() => this.onSwiped('bottom')}
+            onTapCard={this.swipeLeft}
+            cards={this.state.cards}
+            cardIndex={this.state.cardIndex}
+            cardVerticalMargin={20}
+            renderCard={this.renderCard}
+            onSwipedAll={this.onSwipedAllCards}
+            cardStyle={{
+              height: "95%"
+            }}
+            backgroundColor={pageBackground}
+            stackSize={3}
+            stackSeparation={15}
+            animateCardOpacity
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button style={styles.pickButton} title="Hi there" />
+          <Button style={styles.pickButton} title="Hi there" />
+        </View>
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: pageBackground
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
+  swiper: {
+    marginTop: 32
+  },
+  card: {
+    flex: 1,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#E8E8E8',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  buttons: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-around',
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  pickButton: {
+    height: 50,
+    width: 50,
+    borderRadius: 50/2
+  },
+  text: {
     textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-});
+    fontSize: 50,
+    backgroundColor: 'transparent'
+  }
+})
