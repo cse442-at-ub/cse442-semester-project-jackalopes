@@ -1,21 +1,59 @@
 import React, { Component } from 'react'
 import Swiper from 'react-native-deck-swiper'
-import { Button, StyleSheet, Text, View } from 'react-native'
+import { Button, StyleSheet, Text, View, Image } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Ionicons } from '@expo/vector-icons'
 
-// demo purposes only
-function* range(start, end) {
-  for (let i = start; i <= end; i++) {
-    yield i
-  }
-}
+const demoData = [{
+  "id": 1,
+  "full_name": "Mavra Aubri",
+  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+}, {
+  "id": 2,
+  "full_name": "Lorin Demsey",
+  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+}, {
+  "id": 3,
+  "full_name": "Naoma Atwood",
+  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+}, {
+  "id": 4,
+  "full_name": "Chrisse Poe",
+  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+}, {
+  "id": 5,
+  "full_name": "Alphard Reape",
+  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+}]
 
 const pageBackground = '#4FD0E9'
+
+const CircleButton = ({ children, onPress }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={{
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 60,
+      height: 60,
+      backgroundColor: '#fff',
+      borderRadius: 50,
+      shadowColor: 'rgba(0,0,0, .4)', // IOS
+      shadowOffset: { height: 1, width: 1 }, // IOS
+      shadowOpacity: 1, // IOS
+      shadowRadius: 1, //IOS
+      elevation: 2
+    }}
+  >
+    {children}
+  </TouchableOpacity>
+)
 
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      cards: [...range(1, 50)],
+      cards: demoData,
       swipedAllCards: false,
       swipeDirection: '',
       cardIndex: 0
@@ -25,7 +63,8 @@ export default class HomeScreen extends Component {
   renderCard = (card, index) => {
     return (
       <View style={styles.card}>
-        <Text style={styles.text}>{card} - {index}</Text>
+        <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture }}/>
+        <Text style={styles.text}>{card.full_name}</Text>
       </View>
     )
   };
@@ -74,8 +113,22 @@ export default class HomeScreen extends Component {
           />
         </View>
         <View style={styles.buttons}>
-          <Button style={styles.pickButton} title="Hi there" />
-          <Button style={styles.pickButton} title="Hi there" />
+          <CircleButton onPress={() => this.swiper.swipeLeft()}>
+            <Ionicons
+              name="md-close"
+              size={30}
+              style={{ marginBottom: -3 }}
+              color="#990000"
+            />
+          </CircleButton>
+          <CircleButton onPress={() => this.swiper.swipeRight()}>
+            <Ionicons
+              name="md-home"
+              size={30}
+              style={{ marginBottom: -3 }}
+              color="#009900"
+            />
+          </CircleButton>
         </View>
       </View>
     )
@@ -109,11 +162,19 @@ const styles = StyleSheet.create({
   pickButton: {
     height: 50,
     width: 50,
-    borderRadius: 50/2
+    borderRadius: 50 / 2
+  },
+  image: {
+    flex: 1
   },
   text: {
-    textAlign: 'center',
-    fontSize: 50,
-    backgroundColor: 'transparent'
+    width: '100%',
+    position: 'absolute',
+    textAlign: 'left',
+    fontSize: 40,
+    backgroundColor: 'rgba(255, 255, 255, .80);',
+    bottom: 0,
+    left: 0,
+    paddingLeft: 10
   }
 })
