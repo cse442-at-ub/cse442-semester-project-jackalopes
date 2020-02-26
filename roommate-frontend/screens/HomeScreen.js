@@ -6,24 +6,24 @@ import { Ionicons } from '@expo/vector-icons'
 
 const demoData = [{
   "id": 1,
-  "full_name": "Mavra Aubri",
-  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+  "full_name": "Matthew Hertz",
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
 }, {
   "id": 2,
   "full_name": "Lorin Demsey",
-  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
 }, {
   "id": 3,
   "full_name": "Naoma Atwood",
-  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
 }, {
   "id": 4,
   "full_name": "Chrisse Poe",
-  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
 }, {
   "id": 5,
   "full_name": "Alphard Reape",
-  "picture": "https://www.thispersondoesnotexist.com/image.jpg"
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
 }]
 
 const pageBackground = '#4FD0E9'
@@ -64,7 +64,10 @@ export default class HomeScreen extends Component {
     return (
       <View style={styles.card}>
         <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture }}/>
-        <Text style={styles.text}>{card.full_name}</Text>
+        <View style={styles.cardText}>
+          <Text style={styles.text}>{card.full_name}</Text>
+          <Text>$500 - 4 bed, 4 bath</Text>
+        </View>
       </View>
     )
   };
@@ -167,14 +170,17 @@ const styles = StyleSheet.create({
   image: {
     flex: 1
   },
-  text: {
+  cardText: {
     width: '100%',
     position: 'absolute',
-    textAlign: 'left',
-    fontSize: 40,
-    backgroundColor: 'rgba(255, 255, 255, .80);',
     bottom: 0,
     left: 0,
-    paddingLeft: 10
+    backgroundColor: 'rgba(255, 255, 255, .80);',
+    paddingLeft: 5,
+    paddingBottom: 5
+  },
+  text: {
+    textAlign: 'left',
+    fontSize: 35,
   }
 })
