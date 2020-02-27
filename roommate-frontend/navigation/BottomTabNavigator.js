@@ -2,14 +2,13 @@ import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 
 import ChatListScreen from '../screens/ChatListScreen';
 
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = 'Account';
+const INITIAL_ROUTE_NAME = 'Finder';
 
 export default function BottomTabNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
@@ -19,6 +18,14 @@ export default function BottomTabNavigator({ navigation, route }) {
 
   return (
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+      <BottomTab.Screen
+        name="Home"
+          component={HomeScreen}
+        options={{
+          title: 'Finder',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />,
+        }}
+      />
       <BottomTab.Screen
         name="Account"
           component={SettingsScreen}
@@ -51,6 +58,8 @@ function getHeaderTitle(route) {
   const routeName = route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME;
 
   switch (routeName) {
+    case 'Home':
+      return 'Finder';
     case 'Account':
       return 'Settings';
     case 'Edit Profile':
@@ -60,6 +69,6 @@ function getHeaderTitle(route) {
     case 'Matches':
       return 'Your Matches';
     default:
-      return 'Set the header title in navigation/BottomTabNavigator.js';
+      return 'Roomie';
   }
 }
