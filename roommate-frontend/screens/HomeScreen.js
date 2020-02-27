@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Swiper from 'react-native-deck-swiper'
-import { Button, StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 
@@ -87,6 +87,8 @@ export default class HomeScreen extends Component {
   };
 
   render() {
+    const { cards, cardIndex, swipedAllCards } = this.state
+
     return (
       <View style={styles.container}>
         <View style={styles.container}>
@@ -101,8 +103,8 @@ export default class HomeScreen extends Component {
             onSwipedTop={() => this.onSwiped('top')}
             onSwipedBottom={() => this.onSwiped('bottom')}
             onTapCard={this.swipeLeft}
-            cards={this.state.cards}
-            cardIndex={this.state.cardIndex}
+            cards={cards}
+            cardIndex={cardIndex}
             cardVerticalMargin={20}
             renderCard={this.renderCard}
             onSwipedAll={this.onSwipedAllCards}
@@ -116,7 +118,7 @@ export default class HomeScreen extends Component {
           />
         </View>
         <View style={styles.buttons}>
-          <CircleButton onPress={() => this.swiper.swipeLeft()}>
+          <CircleButton onPress={() => !swipedAllCards && this.swiper.swipeLeft()}>
             <Ionicons
               name="md-close"
               size={30}
@@ -124,7 +126,7 @@ export default class HomeScreen extends Component {
               color="#990000"
             />
           </CircleButton>
-          <CircleButton onPress={() => this.swiper.swipeRight()}>
+          <CircleButton onPress={() => !swipedAllCards && this.swiper.swipeRight()}>
             <Ionicons
               name="md-home"
               size={30}
