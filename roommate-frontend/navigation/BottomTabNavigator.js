@@ -4,7 +4,9 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import EditProfileScreen from '../screens/EditProfileScreen'
+import EditProfileScreen from '../screens/EditProfileScreen';
+
+import ChatListScreen from '../screens/ChatListScreen';
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Home';
@@ -48,6 +50,14 @@ export default function BottomTabNavigator({ navigation, route }) {
           title: 'Edit Profile',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
         }}
+        />
+      <BottomTab.Screen
+        name="Matches"
+        component={ChatListScreen}
+        options={{
+            title: 'Matches',
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
       />
     </BottomTab.Navigator>
   );
@@ -65,5 +75,11 @@ function getHeaderTitle(route) {
       return 'Settings';
     case 'Edit Profile':
       return 'Edit Profile';
+    case 'Chats':
+      return 'Your Chats';
+    case 'Matches':
+      return 'Your Matches';
+    default:
+      return 'Set the header title in navigation/BottomTabNavigator.js';
   }
 }
