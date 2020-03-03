@@ -1,179 +1,188 @@
-import * as React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import * as WebBrowser from 'expo-web-browser';
+import React, { Component } from 'react'
+import Swiper from 'react-native-deck-swiper'
+import { StyleSheet, Text, View, Image } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Ionicons } from '@expo/vector-icons'
 
-import { MonoText } from '../components/StyledText';
+const demoData = [{
+  "id": 1,
+  "full_name": "Matthew Hertz",
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
+}, {
+  "id": 2,
+  "full_name": "Lorin Demsey",
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
+}, {
+  "id": 3,
+  "full_name": "Naoma Atwood",
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
+}, {
+  "id": 4,
+  "full_name": "Chrisse Poe",
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
+}, {
+  "id": 5,
+  "full_name": "Alphard Reape",
+  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
+}]
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
-          />
-        </View>
+const pageBackground = '#4FD0E9'
 
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
+const CircleButton = ({ children, onPress }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={{
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 60,
+      height: 60,
+      backgroundColor: '#fff',
+      borderRadius: 50,
+      shadowColor: 'rgba(0,0,0, .4)', // IOS
+      shadowOffset: { height: 1, width: 1 }, // IOS
+      shadowOpacity: 1, // IOS
+      shadowRadius: 1, //IOS
+      elevation: 2
+    }}
+  >
+    {children}
+  </TouchableOpacity>
+)
 
-          <Text style={styles.getStartedText}>Open up the code for this screen:</Text>
+export default class HomeScreen extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      cards: demoData,
+      swipedAllCards: false,
+      swipeDirection: '',
+      cardIndex: 0
+    }
+  }
 
-          <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change any of the text, save the file, and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>navigation/BottomTabNavigator.js</MonoText>
+  renderCard = (card, index) => {
+    return (
+      <View style={styles.card}>
+        <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture }}/>
+        <View style={styles.cardText}>
+          <Text style={styles.text}>{card.full_name}</Text>
+          <Text>$500 - 4 bed, 4 bath</Text>
         </View>
       </View>
-    </View>
-  );
-}
+    )
+  };
 
-HomeScreen.navigationOptions = {
-  header: null,
-};
-
-function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
-
-    return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use useful development
-        tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
+  onSwiped = (type) => {
+    console.log(`on swiped ${type}`)
   }
-}
 
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/development-mode/');
-}
+  onSwipedAllCards = () => {
+    this.setState({
+      swipedAllCards: true
+    })
+  };
 
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/get-started/create-a-new-app/#making-your-first-change'
-  );
+  swipeLeft = () => {
+    this.swiper.swipeLeft()
+  };
+
+  render() {
+    const { cards, cardIndex, swipedAllCards } = this.state
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.container}>
+          <Swiper
+            ref={swiper => {
+              this.swiper = swiper
+            }}
+            style={styles.swiper}
+            onSwiped={() => this.onSwiped('general')}
+            onSwipedLeft={() => this.onSwiped('left')}
+            onSwipedRight={() => this.onSwiped('right')}
+            onSwipedTop={() => this.onSwiped('top')}
+            onSwipedBottom={() => this.onSwiped('bottom')}
+            onTapCard={this.swipeLeft}
+            cards={cards}
+            cardIndex={cardIndex}
+            cardVerticalMargin={20}
+            renderCard={this.renderCard}
+            onSwipedAll={this.onSwipedAllCards}
+            cardStyle={{
+              height: "95%"
+            }}
+            backgroundColor={pageBackground}
+            stackSize={3}
+            stackSeparation={15}
+            animateCardOpacity
+          />
+        </View>
+        <View style={styles.buttons}>
+          <CircleButton onPress={() => !swipedAllCards && this.swiper.swipeLeft()}>
+            <Ionicons
+              name="md-close"
+              size={30}
+              style={{ marginBottom: -3 }}
+              color="#990000"
+            />
+          </CircleButton>
+          <CircleButton onPress={() => !swipedAllCards && this.swiper.swipeRight()}>
+            <Ionicons
+              name="md-home"
+              size={30}
+              style={{ marginBottom: -3 }}
+              color="#009900"
+            />
+          </CircleButton>
+        </View>
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: pageBackground
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
+  swiper: {
+    marginTop: 32
   },
-  contentContainer: {
-    paddingTop: 30,
+  card: {
+    flex: 1,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#E8E8E8',
+    justifyContent: 'center',
+    backgroundColor: 'white',
   },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+  buttons: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-around',
+    paddingTop: 10,
+    paddingBottom: 10,
   },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
+  pickButton: {
+    height: 50,
+    width: 50,
+    borderRadius: 50 / 2
   },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+  image: {
+    flex: 1
   },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
+  cardText: {
+    width: '100%',
     position: 'absolute',
     bottom: 0,
     left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+    backgroundColor: 'rgba(255, 255, 255, .80);',
+    paddingLeft: 5,
+    paddingBottom: 5
   },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-});
+  text: {
+    textAlign: 'left',
+    fontSize: 35,
+  }
+})
