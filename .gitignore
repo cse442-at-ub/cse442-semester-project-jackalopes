@@ -14,3 +14,6 @@ venv/
 
 # macOS
 .DS_Store
+
+roommate-backend/roommatefinder/db.sqlite3
+.vscode
