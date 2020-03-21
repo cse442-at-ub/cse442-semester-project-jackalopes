@@ -12,6 +12,8 @@ import useLinking from './navigation/useLinking';
 import KeyboardShift from './components/KeyboardShift';
 import ChatScreen from './screens/ChatScreen';
 import SignUpPage from './screens/SignUpPage';
+import HomeScreen from './screens/HomeScreen';
+import Login from './screens/Login';
 
 const Stack = createStackNavigator();
 
@@ -56,8 +58,8 @@ export default function App(props) {
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
           <Stack.Navigator>
-            <Stack.Screen name="SignUp" component={SignUpPage} />
-            <Stack.Screen name="Root" component={BottomTabNavigator} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
           </Stack.Navigator>
         </NavigationContainer>
