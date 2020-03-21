@@ -1,16 +1,19 @@
 import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import Login from '../screens/Login';
 
 import ChatListScreen from '../screens/ChatListScreen';
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Finder';
 
-export default function BottomTabNavigator({ navigation, route }) {
+function BottomTabNavigator({ navigation,route }) {
   // Set the header title on the parent stack navigator depending on the
   // currently active tab. Learn more in the documentation:
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
@@ -20,10 +23,11 @@ export default function BottomTabNavigator({ navigation, route }) {
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
       <BottomTab.Screen
         name="Home"
-          component={HomeScreen}
+          component={HomeStackScreen}
         options={{
           title: 'Finder',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />,
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />
         }}
       />
       <BottomTab.Screen
@@ -31,7 +35,8 @@ export default function BottomTabNavigator({ navigation, route }) {
           component={SettingsScreen}
         options={{
           title: 'Settings',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-settings" />,
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-settings" />
         }}
       />
       <BottomTab.Screen
@@ -39,7 +44,8 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={EditProfileScreen}
         options={{
           title: 'Edit Profile',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
         }}
         />
       <BottomTab.Screen
@@ -47,10 +53,30 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={ChatListScreen}
         options={{
             title: 'Matches',
-            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+            tabBarVisible: true,
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
         }}
       />
     </BottomTab.Navigator>
+  );
+}
+
+const Stack = createStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Bottom"
+          component={BottomTab}
+          options={({ route }) => ({
+            headerTitle: getHeaderTitle(route),
+          })}
+        />
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -68,6 +94,8 @@ function getHeaderTitle(route) {
       return 'Your Chats';
     case 'Matches':
       return 'Your Matches';
+    case 'Login':
+      return 'Login';
     default:
       return 'Roomie';
   }
