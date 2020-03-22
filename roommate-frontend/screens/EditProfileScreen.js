@@ -1,3 +1,127 @@
+import React, { Component } from "react";
+import {
+    Alert,
+    AppRegistry,
+    Button,
+    Image,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { Dialog, ProgressDialog, ConfirmDialog } from "react-native-simple-dialogs";
+
+const styles = StyleSheet.create({
+    container: {
+        alignItems: "center",
+        backgroundColor: "#F5FCFF",
+        flex: .5,
+        justifyContent: "center",
+    },
+    welcomeText: {
+        fontSize: 20,
+        margin: 1,
+        textAlign: "center",
+    },
+});
+
+export default class EditProfileScreen extends Component {
+    state = {}
+
+    openDialog = (show) => {
+        this.setState({ showDialog: show });
+    }
+
+    openConfirm = (show) => {
+        this.setState({ showConfirm: show });
+    }
+
+    openProgress = () => {
+        this.setState({ showProgress: true });
+
+        setTimeout(
+            () => {
+                this.setState({ showProgress: false });
+            },
+            4000,
+        );
+    }
+
+    optionYes = () => {
+        this.openConfirm(false);
+        // Yes, this is a workaround :(
+        // Why? See this https://github.com/facebook/react-native/issues/10471
+        setTimeout(
+            () => {
+                Alert.alert("Confirming: You do not mind rooming with someone that has pets.");
+            },
+            300,
+        );
+    }
+
+    optionNo = () => {
+        this.openConfirm(false);
+        // Yes, this is a workaround :(
+        setTimeout(
+            () => {
+                Alert.alert("Confirming: You are not interested in rooming with someone that has pets.");
+            },
+            300,
+        );
+    }
+
+    render() {
+        return (
+            <View style={ styles.container }>
+
+                <Text style={ styles.welcomeText }>
+                    Press on the options below to edit your settings!
+                </Text>
+
+                <View style={ { height: 40 } } />
+
+                <Button
+                    onPress={ () => this.openConfirm(true) }
+                    title="Animal Friendly"
+                />
+
+                <ConfirmDialog
+                    title="Animal Friendly"
+                    message="Are you animal friendly?"
+                    onTouchOutside={ () => this.openConfirm(false) }
+                    visible={ this.state.showConfirm }
+                    negativeButton={
+                        {
+                            title: "NO",
+                            onPress: this.optionNo,
+                            // disabled: true,
+                            titleStyle: {
+                                color: "blue",
+                                colorDisabled: "aqua",
+                            },
+                            style: {
+                                backgroundColor: "transparent",
+                                backgroundColorDisabled: "transparent",
+                            },
+                        }
+                    }
+                    positiveButton={
+                        {
+                            title: "YES",
+                            onPress: this.optionYes,
+                        }
+                    }
+                />
+
+            </View>
+        );
+    }
+}
+
+AppRegistry.registerComponent('Sample', () => App);
+
+//__________________________________________________________________________________________________________________________________________________________________________________________________
+
+/*
 import * as React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -5,6 +129,8 @@ import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import { Icon } from 'react-native-elements'
+
+import DialogBox from 'react-native-dialogbox';
 
 import ReactNativeSettingsPage, {
 	SectionRow,
@@ -14,8 +140,14 @@ import ReactNativeSettingsPage, {
   SwitchRow
 } from 'react-native-settings-page';
 
+handleOnPress = () => {
+        // alert
+        this.dialogbox.alert(1);
+},
+
 export default function EditProfileScreen() {
   return (
+
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <ReactNativeSettingsPage>
         <SectionRow text='Press to view or edit any of the following:'>
@@ -116,3 +248,4 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 });
+*/
