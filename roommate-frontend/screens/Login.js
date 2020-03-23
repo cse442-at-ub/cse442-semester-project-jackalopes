@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, Text, View, Alert, Keyboard,TouchableWithoutFeedback} from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import BottomTabNavigator from '../navigation/BottomTabNavigator';
+import AppContext from '../constants/AppContext.js';
+
 import HomeScreen from '../screens/HomeScreen';
 
-
-const userInfo = {username:'Jackalopes',password:'2020'};
 //const Stack = createStackNavigator();
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -14,21 +13,11 @@ const DismissKeyboard = ({ children }) => (
 );
 
 export default class Login extends React.Component {
+  static contextType = AppContext;
   constructor(props){
     super(props);
     this.state = {username:'',password:''}
   }
-  static navigationOptions = {
-    header:null
-  };
-  resetToDashboard() {
-		this.props.navigation.dispatch(
-			NavigationActions.reset({
-				index: 0,
-				actions: [NavigationActions.navigate({ routeName: "Dashboard" })]
-			})
-		);
-	}
   render() {
     const { navigate } = this.props.navigation;
     return (
@@ -52,22 +41,13 @@ export default class Login extends React.Component {
 
           <TouchableOpacity
             style={styles.btnEnter}
-            onPress={this._signin}
+            onPress={() => this.context.signin(this.state)}
           >
             <Text style={styles.btnEnterText}>ENTER</Text>
           </TouchableOpacity>
         </View>
       </DismissKeyboard>
     );
-  }
-
-  _signin = async () => {
-    if(userInfo.username===this.state.username && userInfo.password===this.state.password){
-      this.props.navigation.navigate("Home");
-    }
-    else{
-      alert('Username or Password is Incorrect');
-    }
   }
 }
 
