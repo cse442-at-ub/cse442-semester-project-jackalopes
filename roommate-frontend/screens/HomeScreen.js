@@ -3,7 +3,6 @@ import Swiper from 'react-native-deck-swiper'
 import { StyleSheet, Text, View, Image } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
-import BottomTabNavigator from '../navigation/BottomTabNavigator';
 
 const demoData = [{
   "id": 1,
