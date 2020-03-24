@@ -25,7 +25,7 @@ SECRET_KEY = '^eb)_fdp!f-gm(-!r5qs7n5f6vpi1h&243@y%gu9$9%oi06d+&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 REST_REGISTRATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_registration'
+    'rest_registration',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,11 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
