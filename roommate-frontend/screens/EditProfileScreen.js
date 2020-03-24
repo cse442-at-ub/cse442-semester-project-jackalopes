@@ -14,17 +14,28 @@ const styles = StyleSheet.create({
     container: {
         alignItems: "center",
         backgroundColor: "#F5FCFF",
-        flex: .5,
+        flex: 1,
         justifyContent: "center",
     },
     welcomeText: {
         fontSize: 20,
-        margin: 1,
+        margin: 10,
+        textAlign: "center",
+    },
+    exampleText: {
+        fontSize: 20,
+        marginBottom: 25,
+        textAlign: "center",
+    },
+    instructionsText: {
+        color: "#333333",
+        fontSize: 16,
+        marginBottom: 40,
         textAlign: "center",
     },
 });
 
-export default class EditProfileScreen extends Component {
+export default class App extends Component {
     state = {}
 
     openDialog = (show) => {
@@ -35,16 +46,6 @@ export default class EditProfileScreen extends Component {
         this.setState({ showConfirm: show });
     }
 
-    openProgress = () => {
-        this.setState({ showProgress: true });
-
-        setTimeout(
-            () => {
-                this.setState({ showProgress: false });
-            },
-            4000,
-        );
-    }
 
     optionYes = () => {
         this.openConfirm(false);
@@ -61,6 +62,7 @@ export default class EditProfileScreen extends Component {
     optionNo = () => {
         this.openConfirm(false);
         // Yes, this is a workaround :(
+        // Why? See this https://github.com/facebook/react-native/issues/10471
         setTimeout(
             () => {
                 Alert.alert("Confirming: You are not interested in rooming with someone that has pets.");
@@ -73,16 +75,71 @@ export default class EditProfileScreen extends Component {
         return (
             <View style={ styles.container }>
 
-                <Text style={ styles.welcomeText }>
-                    Press on the options below to edit your settings!
+                <Text style={ styles.exampleText }>
+                    Options for editing profile:
                 </Text>
-
-                <View style={ { height: 40 } } />
-
                 <Button
                     onPress={ () => this.openConfirm(true) }
                     title="Animal Friendly"
                 />
+
+                <View style={ { height: 30 } } />
+
+               <Button
+                   onPress={ () => this.openDialog(true) }
+                    title="Age"
+                />
+                <View style={ { height: 30 } } />
+
+                <Button
+                    onPress={ () => this.openDialog(true) }
+                     title="Bio"
+                 />
+                 <View style={ { height: 30 } } />
+
+                 <Button
+                   onPress={ () => this.openDialog(true) }
+                    title="Photos"
+                 />
+
+                  <View style={ { height: 30 } } />
+
+               <Button
+                    onPress={ () => this.openDialog(true) }
+                    title="Gender"
+                 />
+
+                <View style={ { height: 30 } } />
+
+              <Button
+                  onPress={ () => this.openDialog(true) }
+                   title="School"
+               />
+               <View style={ { height: 30 } } />
+
+
+                <Dialog
+                    title="In progress"
+                    animationType="fade"
+                    contentStyle={
+                        {
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }
+                    }
+                    onTouchOutside={ () => this.openDialog(false) }
+                    visible={ this.state.showDialog }
+                >
+
+                    <Text style={ { marginVertical: 30 } }>
+                        Welcome to this dialog box. Functionality curated to the specific edit profile option coming soon in sprint 3. :-)
+                    </Text>
+                    <Button
+                        onPress={ () => this.openDialog(false) }
+                        style={ { marginTop: 10 } }
+                        title="CLOSE"
+                    />
+                </Dialog>
 
                 <ConfirmDialog
                     title="Animal Friendly"
@@ -112,6 +169,14 @@ export default class EditProfileScreen extends Component {
                     }
                 />
 
+                <ProgressDialog
+                    title="Progress Dialog"
+                    activityIndicatorColor="blue"
+                    activityIndicatorSize="large"
+                    animationType="slide"
+                    message="Please, wait..."
+                    visible={ this.state.showProgress }
+                />
             </View>
         );
     }
@@ -122,6 +187,26 @@ AppRegistry.registerComponent('Sample', () => App);
 //__________________________________________________________________________________________________________________________________________________________________________________________________
 
 /*
+//before the imports: to add a photo to the custom sialog but this about the text:
+ <Image
+    source={
+        {
+            uri: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fphotos-images%2Ffunny.html&psig=AOvVaw14iIahh7tbekMEgDbOojYR&ust=1585173614950000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKi88v2NtOgCFQAAAAAdAAAAABAD",
+        }
+    }
+    style={
+        {
+            width: 99,
+            height: 87,
+            backgroundColor: "black",
+            marginTop: 10,
+            resizeMode: "contain",
+        }
+    }
+/>
+
+
+
 import * as React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
