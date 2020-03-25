@@ -4,13 +4,14 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import Login from '../screens/Login';
 
 import ChatListScreen from '../screens/ChatListScreen';
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Finder';
 
-export default function BottomTabNavigator({ navigation, route }) {
+export default function BottomTabNavigator({ navigation,route }) {
   // Set the header title on the parent stack navigator depending on the
   // currently active tab. Learn more in the documentation:
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
@@ -23,7 +24,8 @@ export default function BottomTabNavigator({ navigation, route }) {
           component={HomeScreen}
         options={{
           title: 'Finder',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />,
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />
         }}
       />
       <BottomTab.Screen
@@ -31,7 +33,8 @@ export default function BottomTabNavigator({ navigation, route }) {
           component={SettingsScreen}
         options={{
           title: 'Settings',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-settings" />,
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-settings" />
         }}
       />
       <BottomTab.Screen
@@ -39,7 +42,8 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={EditProfileScreen}
         options={{
           title: 'Edit Profile',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
         }}
         />
       <BottomTab.Screen
@@ -47,7 +51,8 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={ChatListScreen}
         options={{
             title: 'Matches',
-            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+            tabBarVisible: true,
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
         }}
       />
     </BottomTab.Navigator>

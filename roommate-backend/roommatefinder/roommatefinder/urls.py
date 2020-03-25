@@ -17,10 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 
-from rest_registration.api.urls import register
+from rest_registration.api.urls import register, login
 
 api_urlpatterns = [
     path('register/', register),
+    path('login/', login),
 ]
 
 urlpatterns = [
