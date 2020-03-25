@@ -5,6 +5,7 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import * as SecureStore from 'expo-secure-store';
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import useLinking from './navigation/useLinking';
@@ -12,12 +13,17 @@ import useLinking from './navigation/useLinking';
 import KeyboardShift from './components/KeyboardShift';
 import ChatScreen from './screens/ChatScreen';
 import SignUpPage from './screens/SignUpPage';
+import HomeScreen from './screens/HomeScreen';
+import Login from './screens/Login';
+import {AppProvider} from './constants/AppContext.js';
+import { determineURL } from './utils';
 
 const Stack = createStackNavigator();
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
   const [initialNavigationState, setInitialNavigationState] = React.useState();
+  const [state, setState] = React.useState({});
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
 
@@ -25,6 +31,9 @@ export default function App(props) {
   React.useEffect(() => {
     async function loadResourcesAndDataAsync() {
       try {
+        setState({
+          token: null,
+        });
         SplashScreen.preventAutoHide();
 
         // Load our initial navigation state
@@ -44,23 +53,102 @@ export default function App(props) {
       }
     }
 
-    loadResourcesAndDataAsync();
-  }, []);
+    loadResourcesAndDataAsync();  }, []);
+
+  const appContext = React.useMemo(
+    () =>
+      ({
+        signin: async data => {
+          const {username, password} = data;
+          try {
+            await fetch(`${determineURL()}/api/v1/login/`, {
+              method: 'POST',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+              body: JSON.stringify({
+                login: username,
+                password,
+              })
+            })
+              .then(response => response.json())
+              .then(loginResponse => {
+                if (loginResponse.token != undefined) {
+                  console.log(loginResponse.token);
+                  setState({token: loginResponse.token});
+                  // success
+                  console.log('You have logged in successfully!');
+                } else {
+                  throw "Invalid login";
+                }
+              })
+              .then(() => SecureStore.setItemAsync('token', state.token));
+          } catch (e) {
+            console.log("Error logging in:", e);
+          }
+        },
+        signup: async data => {
+          const { full_name, username, password, email, phone_number } = data;
+          console.log(`${determineURL()}/api/v1/register/`);
+
+          try {
+            //signup logic
+            await fetch(`${determineURL()}/api/v1/register/`, {
+              method: 'POST',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+              body: JSON.stringify({
+                first_name: full_name.substr(0, full_name.indexOf(' ')),
+                last_name: full_name.substr(full_name.indexOf(' ') + 1),
+                username,
+                email,
+                password,
+                password_confirm: password,
+              })
+            })
+              .then(response => response.json())
+              .then(json => {
+                console.log(json);
+                if (json.id) {
+                  appContext.signin({username, password});
+                }
+              });
+          } catch (err) {
+            console.log('Error signing up: ', err);
+          }
+        }
+      }),
+    []
+  );
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return null;
   } else {
+    console.log(state);
     return (
       <KeyboardShift>
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
-          <Stack.Navigator>
-            <Stack.Screen name="SignUp" component={SignUpPage} />
-            <Stack.Screen name="Root" component={BottomTabNavigator} />
-            <Stack.Screen name="Chat" component={ChatScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <AppProvider value={appContext}>
+          <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+            <Stack.Navigator>
+              {
+                state.token == null ?  (
+                  <React.Fragment>
+                    <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen name="Sign Up" component={SignUpPage} />
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <Stack.Screen name="Root" component={BottomTabNavigator}/>
+                    <Stack.Screen name="Chat" component={ChatScreen}/>
+                  </React.Fragment>
+                )
+              }
+            </Stack.Navigator>
+          </NavigationContainer>
+        </AppProvider>
       </View>
       </KeyboardShift>
     );
