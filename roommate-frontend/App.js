@@ -16,6 +16,7 @@ import SignUpPage from './screens/SignUpPage';
 import HomeScreen from './screens/HomeScreen';
 import Login from './screens/Login';
 import {AppProvider} from './constants/AppContext.js';
+import { determineURL } from './utils';
 
 const Stack = createStackNavigator();
 
@@ -54,28 +55,69 @@ export default function App(props) {
 
     loadResourcesAndDataAsync();  }, []);
 
-  // TODO: Fake user info
-  const userInfo = {username:'Jackalopes',password:'2020'};
-
   const appContext = React.useMemo(
     () =>
       ({
         signin: async data => {
+          const {username, password} = data;
           try {
-            // TODO: Real validation...
-            if (userInfo.username === data.username && userInfo.password === data.password)
-            {
-              setState({token: "someToken"});
-            } else {
-              setState({token: null});
-            }
-            await SecureStore.setItemAsync('token', state.token);
+            await fetch(`${determineURL()}/api/v1/login/`, {
+              method: 'POST',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+              body: JSON.stringify({
+                login: username,
+                password,
+              })
+            })
+              .then(response => response.json())
+              .then(loginResponse => {
+                if (loginResponse.token != undefined) {
+                  console.log(loginResponse.token);
+                  setState({token: loginResponse.token});
+                  // success
+                  console.log('You have logged in successfully!');
+                } else {
+                  throw "Invalid login";
+                }
+              })
+              .then(() => SecureStore.setItemAsync('token', state.token));
           } catch (e) {
-            console.log(e);
-            // Restoring token failed
+            console.log("Error logging in:", e);
           }
         },
-        // TODO: Sign up
+        signup: async data => {
+          const { full_name, username, password, email, phone_number } = data;
+          console.log(`${determineURL()}/api/v1/register/`);
+
+          try {
+            //signup logic
+            await fetch(`${determineURL()}/api/v1/register/`, {
+              method: 'POST',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+              body: JSON.stringify({
+                first_name: full_name.substr(0, full_name.indexOf(' ')),
+                last_name: full_name.substr(full_name.indexOf(' ') + 1),
+                username,
+                email,
+                password,
+                password_confirm: password,
+              })
+            })
+              .then(response => response.json())
+              .then(json => {
+                console.log(json);
+                if (json.id) {
+                  appContext.signin({username, password});
+                }
+              });
+          } catch (err) {
+            console.log('Error signing up: ', err);
+          }
+        }
       }),
     []
   );
@@ -92,10 +134,10 @@ export default function App(props) {
           <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
             <Stack.Navigator>
               {
-                // TODO: Add Signup after Login
                 state.token == null ?  (
                   <React.Fragment>
                     <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen name="Sign Up" component={SignUpPage} />
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
