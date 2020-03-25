@@ -1,8 +1,8 @@
-const currentBackend = 'https://e42d4c5b.ngrok.io' // one of 'local', 'cheshire'
+const currentBackend = 'cheshire' // one of 'local', 'cheshire'
 export const determineURL = () => {
   switch (currentBackend) {
     case 'cheshire': {
-      return 'https://cheshire.cse.buffalo.edu/'
+      return 'https://cheshire.cse.buffalo.edu:3232/'
     }
     case 'local': {
       return 'https://localhost:8000'
