@@ -16,7 +16,7 @@ export default class Login extends React.Component {
   static contextType = AppContext;
   constructor(props){
     super(props);
-    this.state = {username:'',password:''}
+    this.state = {username:'',password:''};
   }
   render() {
     const { navigate } = this.props.navigation;
@@ -45,6 +45,17 @@ export default class Login extends React.Component {
           >
             <Text style={styles.btnEnterText}>ENTER</Text>
           </TouchableOpacity>
+
+          <View style={styles.signupContainer}>
+                       <Text>New to the app?</Text>
+                       <TouchableOpacity
+                  style={styles.btnSignup}
+                onPress={() => navigate("Sign Up")}
+          >
+            <Text style={styles.btnEnterText}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+
         </View>
       </DismissKeyboard>
     );
@@ -81,5 +92,18 @@ const styles = StyleSheet.create({
   btnEnterText: {
     color:'#ffffff',
     fontWeight: '700',
+  },
+  signupContainer: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  btnSignup: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#428AF8',
+    alignItems: 'center',
+    width: 150,
+    borderRadius: 10,
+    padding:10,
   },
 });
