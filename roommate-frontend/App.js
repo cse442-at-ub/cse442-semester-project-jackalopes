@@ -78,11 +78,12 @@ export default function App(props) {
                   setState({token: loginResponse.token});
                   // success
                   console.log('You have logged in successfully!');
+                  return loginResponse.token
                 } else {
                   throw "Invalid login";
                 }
               })
-              .then(() => SecureStore.setItemAsync('token', state.token));
+              .then((token) => SecureStore.setItemAsync('token', token));
           } catch (e) {
             console.log("Error logging in:", e);
           }
