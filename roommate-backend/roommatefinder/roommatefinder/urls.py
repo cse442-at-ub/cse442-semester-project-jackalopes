@@ -19,9 +19,13 @@ from django.conf.urls import include
 
 from rest_registration.api.urls import register, login
 
+from rest_framework import routers
+from roommatefinder import views
+
 api_urlpatterns = [
     path('register/', register),
     path('login/', login),
+    path('matches/', views.MatchList.as_view()),
 ]
 
 urlpatterns = [
