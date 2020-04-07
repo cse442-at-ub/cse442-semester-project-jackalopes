@@ -25,7 +25,7 @@ SECRET_KEY = '^eb)_fdp!f-gm(-!r5qs7n5f6vpi1h&243@y%gu9$9%oi06d+&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 REST_REGISTRATION = {
     'REGISTER_VERIFICATION_ENABLED': False,
@@ -42,8 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken'
+    'rest_registration',
     'rest_framework',
-    'rest_registration'
 ]
 
 MIDDLEWARE = [
@@ -83,10 +84,15 @@ WSGI_APPLICATION = 'roommatefinder.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'db.sqlite3',
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
