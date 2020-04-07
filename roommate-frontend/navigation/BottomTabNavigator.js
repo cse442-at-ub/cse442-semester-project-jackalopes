@@ -54,5 +54,6 @@ function getHeaderTitle(route) {
       return 'Links to learn more';
     case 'Edit Profile':
       return 'Edit Profile';
+      break;
   }
 }
