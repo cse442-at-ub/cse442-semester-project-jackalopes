@@ -28,11 +28,6 @@ class ChatModule extends React.Component {
   }
 
   render() {
-    //need if statmenet here 
-    Alert.alert('New Match!!', 'You have a new match!', [
-  		{text: 'Dismiss' , onPress: () => console.log('Dismissed')},
-  		{text: 'Message', onPress: () => console.log('This should work next sprint')}
-  	])
     return(
         <GiftedChat
           messages={this.state.messages}

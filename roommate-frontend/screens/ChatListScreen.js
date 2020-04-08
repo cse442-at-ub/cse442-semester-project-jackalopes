@@ -1,11 +1,16 @@
 import * as React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 // UI Elements
 export default function ChatListScreen({navigation}) {
+  //need if statmenet here
+Alert.alert('New Match!!', 'You have a new match!', [
+{text: 'Dismiss' , onPress: () => console.log('Dismissed')},
+{text: 'Message', onPress: () => console.log('This should work next sprint')}
+])
   const matches = [
     {
       photo: require('../assets/images/aaa.gif'),
