@@ -19,7 +19,7 @@ export default function pop() {
 	//another if there's no matches
 	Alert.alert('New Match!!', 'You have a new match!', [
 		{text: 'Dismiss' , onPress: () => console.log('Dismissed')},
-		{text: 'Message', onPress: () => console.log('This should work next spring')}
+		{text: 'Message', onPress: () => console.log('This should work next sprint')}
 	])
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
