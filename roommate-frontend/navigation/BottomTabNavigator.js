@@ -4,6 +4,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import EditProfileScreen from '../screens/EditProfileScreen'
+import pop from '../screens/pop'
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Home';
@@ -40,7 +41,16 @@ export default function BottomTabNavigator({ navigation, route }) {
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
         }}
       />
+      <BottomTab.Screen
+        name="pop"
+        component={pop}
+        options={{
+          title: 'pop',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
+      />
     </BottomTab.Navigator>
+
   );
 }
 
@@ -54,6 +64,8 @@ function getHeaderTitle(route) {
       return 'Links to learn more';
     case 'Edit Profile':
       return 'Edit Profile';
+    case 'pop':
+      return 'pop';
       break;
   }
 }
