@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from roommatefinder.serializers import CurrentUserSerializer, UserProfileSerializer
 import json
 
-
 class MatchList(APIView):
     """
     List all users
