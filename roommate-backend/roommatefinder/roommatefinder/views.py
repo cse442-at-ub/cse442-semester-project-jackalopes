@@ -68,7 +68,7 @@ class MatchDislike(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        body = json.loads(request.body)
+        body = json.loads(request.body.decode('utf-8'))
         current_user = User.objects.get(username=request.user)
 
         disliked_user_id = body['user_disliked']
@@ -99,7 +99,7 @@ class UserProfile(APIView):
         return Response(serializer.data)
 
     def patch(self, request, format=None):
-        body = json.loads(request.body)
+        body = json.loads(request.body.decode('utf-8'))
         current_user = User.objects.get(username=request.user)
 
         # first_name, last_name, picture_url, show_profile, animal_friendly, gender, max_age, max_distance = body(None)
