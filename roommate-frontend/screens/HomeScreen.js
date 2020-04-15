@@ -7,28 +7,6 @@ import { Ionicons } from '@expo/vector-icons'
 import * as SecureStore from 'expo-secure-store';
 import { determineURL } from '../utils'
 
-const demoData = [{
-  "id": 1,
-  "full_name": "Matthew Hertz",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 2,
-  "full_name": "Lorin Demsey",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 3,
-  "full_name": "Naoma Atwood",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 4,
-  "full_name": "Chrisse Poe",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 5,
-  "full_name": "Alphard Reape",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}]
-
 const pageBackground = '#4FD0E9'
 
 const CircleButton = ({ children, onPress }) => (
