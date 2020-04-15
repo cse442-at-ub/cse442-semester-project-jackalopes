@@ -1,11 +1,219 @@
+import React, { Component } from "react";
+import {
+    Alert,
+    AppRegistry,
+    Button,
+    Image,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { Dialog, ProgressDialog, ConfirmDialog } from "react-native-simple-dialogs";
+
+const styles = StyleSheet.create({
+    container: {
+        alignItems: "center",
+        backgroundColor: "#F5FCFF",
+        flex: 1,
+        justifyContent: "center",
+    },
+    welcomeText: {
+        fontSize: 20,
+        margin: 10,
+        textAlign: "center",
+    },
+    exampleText: {
+        fontSize: 20,
+        marginBottom: 25,
+        textAlign: "center",
+    },
+    instructionsText: {
+        color: "#333333",
+        fontSize: 16,
+        marginBottom: 40,
+        textAlign: "center",
+    },
+});
+
+export default class App extends Component {
+    state = {}
+
+    openDialog = (show) => {
+        this.setState({ showDialog: show });
+    }
+
+    openConfirm = (show) => {
+        this.setState({ showConfirm: show });
+    }
+
+
+    optionYes = () => {
+        this.openConfirm(false);
+        // Yes, this is a workaround :(
+        // Why? See this https://github.com/facebook/react-native/issues/10471
+        setTimeout(
+            () => {
+                Alert.alert("Confirming: You do not mind rooming with someone that has pets.");
+            },
+            300,
+        );
+    }
+
+    optionNo = () => {
+        this.openConfirm(false);
+        // Yes, this is a workaround :(
+        // Why? See this https://github.com/facebook/react-native/issues/10471
+        setTimeout(
+            () => {
+                Alert.alert("Confirming: You are not interested in rooming with someone that has pets.");
+            },
+            300,
+        );
+    }
+
+    render() {
+        return (
+            <View style={ styles.container }>
+
+                <Text style={ styles.exampleText }>
+                    Options for editing profile:
+                </Text>
+                <Button
+                    onPress={ () => this.openConfirm(true) }
+                    title="Animal Friendly"
+                />
+
+                <View style={ { height: 30 } } />
+
+               <Button
+                   onPress={ () => this.openDialog(true) }
+                    title="Age"
+                />
+                <View style={ { height: 30 } } />
+
+                <Button
+                    onPress={ () => this.openDialog(true) }
+                     title="Bio"
+                 />
+                 <View style={ { height: 30 } } />
+
+                 <Button
+                   onPress={ () => this.openDialog(true) }
+                    title="Photos"
+                 />
+
+                  <View style={ { height: 30 } } />
+
+               <Button
+                    onPress={ () => this.openDialog(true) }
+                    title="Gender"
+                 />
+
+                <View style={ { height: 30 } } />
+
+              <Button
+                  onPress={ () => this.openDialog(true) }
+                   title="School"
+               />
+               <View style={ { height: 30 } } />
+
+
+                <Dialog
+                    title="In progress"
+                    animationType="fade"
+                    contentStyle={
+                        {
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }
+                    }
+                    onTouchOutside={ () => this.openDialog(false) }
+                    visible={ this.state.showDialog }
+                >
+
+                    <Text style={ { marginVertical: 30 } }>
+                        Welcome to this dialog box. Functionality curated to the specific edit profile option coming soon in sprint 3. :-)
+                    </Text>
+                    <Button
+                        onPress={ () => this.openDialog(false) }
+                        style={ { marginTop: 10 } }
+                        title="CLOSE"
+                    />
+                </Dialog>
+
+                <ConfirmDialog
+                    title="Animal Friendly"
+                    message="Are you animal friendly?"
+                    onTouchOutside={ () => this.openConfirm(false) }
+                    visible={ this.state.showConfirm }
+                    negativeButton={
+                        {
+                            title: "NO",
+                            onPress: this.optionNo,
+                            // disabled: true,
+                            titleStyle: {
+                                color: "blue",
+                                colorDisabled: "aqua",
+                            },
+                            style: {
+                                backgroundColor: "transparent",
+                                backgroundColorDisabled: "transparent",
+                            },
+                        }
+                    }
+                    positiveButton={
+                        {
+                            title: "YES",
+                            onPress: this.optionYes,
+                        }
+                    }
+                />
+
+                <ProgressDialog
+                    title="Progress Dialog"
+                    activityIndicatorColor="blue"
+                    activityIndicatorSize="large"
+                    animationType="slide"
+                    message="Please, wait..."
+                    visible={ this.state.showProgress }
+                />
+            </View>
+        );
+    }
+}
+
+AppRegistry.registerComponent('Sample', () => App);
+
+//__________________________________________________________________________________________________________________________________________________________________________________________________
+
+/*
+//before the imports: to add a photo to the custom sialog but this about the text:
+ <Image
+    source={
+        {
+            uri: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fphotos-images%2Ffunny.html&psig=AOvVaw14iIahh7tbekMEgDbOojYR&ust=1585173614950000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKi88v2NtOgCFQAAAAAdAAAAABAD",
+        }
+    }
+    style={
+        {
+            width: 99,
+            height: 87,
+            backgroundColor: "black",
+            marginTop: 10,
+            resizeMode: "contain",
+        }
+    }
+/>
+
+
+
 import * as React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
-
 import { Icon } from 'react-native-elements'
-
+import DialogBox from 'react-native-dialogbox';
 import ReactNativeSettingsPage, {
 	SectionRow,
 	NavigateRow,
@@ -13,7 +221,10 @@ import ReactNativeSettingsPage, {
   SliderRow,
   SwitchRow
 } from 'react-native-settings-page';
-
+handleOnPress = () => {
+        // alert
+        this.dialogbox.alert(1);
+},
 export default function EditProfileScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -72,7 +283,6 @@ export default function EditProfileScreen() {
     </ScrollView>
   );
 }
-
 function OptionButton({ icon, label, onPress, isLastOption }) {
   return (
     <RectButton style={[styles.option, isLastOption && styles.lastOption]} onPress={onPress}>
@@ -87,7 +297,6 @@ function OptionButton({ icon, label, onPress, isLastOption }) {
     </RectButton>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -116,3 +325,4 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 });
+*/
