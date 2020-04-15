@@ -22,5 +22,5 @@ class User(AbstractUser):
     animal_friendly = models.BooleanField(default=True)
     gender = models.CharField(
         max_length=2, blank=False, null=False, default='AN', choices=gender_types)
-    max_age = models.IntegerField(range(18, 120), default=30)
-    max_distance = models.IntegerField(range(0, 100), default=30)
+    max_age = models.IntegerField(range(18, 120), default=120)
+    max_distance = models.IntegerField(range(0, 100), default=100)

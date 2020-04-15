@@ -23,10 +23,14 @@ class MatchList(APIView):
         users = User.objects.exclude(username=request.user).difference(
             current_user.likes.all()).difference(current_user.dislikes.all())
 
-        # for user in users:
-        #     print(user.likes.clear())
+        final_users = []
 
-        serializer = CurrentUserSerializer(users, many=True)
+        # filter users
+        for user in users:
+            if user.show_profile and user.animal_friendly is current_user.animal_friendly and (current_user.gender is 'AN' or current_user.gender == user.gender) and user.max_age <= current_user.max_age and user.max_distance <= current_user.max_distance:
+                final_users.append(user)
+
+        serializer = UserProfileSerializer(final_users, many=True)
         return Response(serializer.data)
 
 
@@ -117,6 +121,8 @@ class UserProfile(APIView):
             current_user.max_age = body['max_age']
         if 'max_distance' in body:
             current_user.max_distance = body['max_distance']
+
+        current_user.save()
 
         serializer = UserProfileSerializer(current_user)
         return Response({
