@@ -28,6 +28,7 @@ api_urlpatterns = [
     path('matches/', views.MatchList.as_view()),
     path('like/', views.MatchLike.as_view()),
     path('dislike/', views.MatchDislike.as_view()),
+    path('user/', views.UserProfile.as_view()),
 ]
 
 urlpatterns = [

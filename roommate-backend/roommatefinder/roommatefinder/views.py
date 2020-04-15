@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from roommatefinder.serializers import CurrentUserSerializer
+from roommatefinder.serializers import CurrentUserSerializer, UserProfileSerializer
 import json
+
 
 class MatchList(APIView):
     """
@@ -16,16 +17,18 @@ class MatchList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        current_user = User.objects.get(username= request.user)
+        current_user = User.objects.get(username=request.user)
         print(current_user)
         print([user.id for user in current_user.likes.all()])
-        users = User.objects.exclude(username= request.user).difference(current_user.likes.all()).difference(current_user.dislikes.all())
+        users = User.objects.exclude(username=request.user).difference(
+            current_user.likes.all()).difference(current_user.dislikes.all())
 
         # for user in users:
         #     print(user.likes.clear())
 
         serializer = CurrentUserSerializer(users, many=True)
         return Response(serializer.data)
+
 
 class MatchLike(APIView):
     """
@@ -36,7 +39,7 @@ class MatchLike(APIView):
 
     def post(self, request, format=None):
         body = json.loads(request.body)
-        current_user = User.objects.get(username= request.user)
+        current_user = User.objects.get(username=request.user)
 
         liked_user_id = body['user_liked']
         liked_user = User.objects.get(id=liked_user_id)
@@ -53,6 +56,7 @@ class MatchLike(APIView):
             'liked_user': serializer.data
         })
 
+
 class MatchDislike(APIView):
     """
     List all users
@@ -62,7 +66,7 @@ class MatchDislike(APIView):
 
     def post(self, request, format=None):
         body = json.loads(request.body)
-        current_user = User.objects.get(username= request.user)
+        current_user = User.objects.get(username=request.user)
 
         disliked_user_id = body['user_disliked']
         disliked_user = User.objects.get(id=disliked_user_id)
@@ -75,4 +79,47 @@ class MatchDislike(APIView):
             'status': 'Success',
             'current_number_dislikes': current_user.dislikes.count(),
             'disliked_user': serializer.data
+        })
+
+
+class UserProfile(APIView):
+    """
+    List all users
+    """
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        current_user = User.objects.get(username=request.user)
+
+        serializer = UserProfileSerializer(current_user)
+        return Response(serializer.data)
+
+    def patch(self, request, format=None):
+        body = json.loads(request.body)
+        current_user = User.objects.get(username=request.user)
+
+        # first_name, last_name, picture_url, show_profile, animal_friendly, gender, max_age, max_distance = body(None)
+
+        if 'first_name' in body:
+            current_user.first_name = body['first_name']
+        if 'last_name' in body:
+            current_user.last_name = body['last_name']
+        if 'picture_url' in body:
+            current_user.picture_url = body['picture_url']
+        if 'show_profile' in body:
+            current_user.show_profile = body['show_profile']
+        if 'animal_friendly' in body:
+            current_user.animal_friendly = body['animal_friendly']
+        if 'gender' in body:
+            current_user.gender = body['gender']
+        if 'max_age' in body:
+            current_user.max_age = body['max_age']
+        if 'max_distance' in body:
+            current_user.max_distance = body['max_distance']
+
+        serializer = UserProfileSerializer(current_user)
+        return Response({
+            'status': 'Success',
+            'updated_user': serializer.data
         })
