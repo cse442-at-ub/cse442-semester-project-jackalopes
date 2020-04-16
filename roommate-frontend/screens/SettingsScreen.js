@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import { StyleSheet, Text, View, TextInput,  Alert, AppRegistry, Button, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Alert, AppRegistry, Button, Image, TouchableOpacity } from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import ReactNativeSettingsPage, {
   NavigateRow,
@@ -9,154 +9,182 @@ import ReactNativeSettingsPage, {
   CheckRow,
   SliderRow
 } from 'react-native-settings-page';
-import { RectButton, ScrollView, Dialog, ProgressDialog, ConfirmDialog} from 'react-native-gesture-handler';
-//import { Dialog, ProgressDialog, ConfirmDialog } from "react-native-simple-dialogs";
-import * as WebBrowser from 'expo-web-browser';
+import * as SecureStore from 'expo-secure-store';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { determineURL } from '../utils';
 
-
-export default class SettingsScreen extends Component {
-
-constructor(props){
-    super(props);
+export default class SettingsScreen extends React.Component {
+  constructor() {
+    super()
     this.state = {
-      DialogVisible :false,
-    }
-  }
-   showDialog = () => {
-        this.setState({ DialogVisible :true});
-    }
-    closeDialog(){
-      this.setState({  DialogVisible:false });
-    }
-    submitInput()	{
-            this.setState({ DialogVisible:false});
-
-    }
-  sendInput(inputText){
-    if (inputText == null){
-      this.closeDialog()}
-    console.log("sendInput (EC): "+inputText);
-  }
-//
-
-
-  /*state = {
-      check: false,
-      switch: false,
-      value: 40
+      showProfile: false,
+      animalFriendly: false,
+      gender: 'MA',
+      maxAge: 32,
+      maxDistance: 32,
+      token: null,
+      dialogVisible: false
     };
-    _navigateToScreen = () => {
-      const { navigation } = this.props;
-      //navigation.navigate('Your-Screen-Name');
-    };*/
+  }
+  componentDidMount() {
+    SecureStore.getItemAsync('token')
+      .then(token => {
+        fetch(`${determineURL()}/api/v1/user/`, {
+          method: 'GET',
+          headers: new Headers({
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+          })
+        })
+          .then(response => response.json())
+          .then(user => {
+            if (user.id !== undefined) {
+              this.setState({
+                showProfile: user.show_profile,
+                animalFriendly: user.animal_friendly,
+                gender: user.gender,
+                maxAge: user.max_age,
+                maxDistance: user.max_distance,
+                token
+              })
+              console.log(user)
+            } else {
+              throw "Invalid login";
+            }
+          })
+      })
+  }
+  showDialog = () => {
+    this.setState({ dialogVisible: true });
+  }
+  closeDialog() {
+    this.setState({ dialogVisible: false });
+  }
+  submitInput() {
+    this.setState({ dialogVisible: false });
+  }
+  sendInput(inputText) {
+    if (inputText == null) {
+      this.closeDialog()
+    }
+    console.log("sendInput (EC): " + inputText);
+  }
+  updatePreferences = () => {
+    const { gender, animalFriendly, maxAge, showProfile, maxDistance, token } = this.state
 
-    render(){
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-    <View style={styles.container}>
+    fetch(`${determineURL()}/api/v1/user/`, {
+      method: 'PATCH',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`
+      }),
+      body: JSON.stringify({
+        show_profile: showProfile,
+        animal_friendly: animalFriendly,
+        gender: gender,
+        max_age: maxAge,
+        max_distance: maxDistance
+      })
+    })
+  }
+  render() {
+    const { gender, animalFriendly, maxAge, showProfile, maxDistance, dialogVisible } = this.state
 
-      </View>
-
- <ReactNativeSettingsPage>
-
- <View style={styles.container}>
-      </View>
-
-<DialogInput DialogVisible={this.state.DialogVisible}
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <ReactNativeSettingsPage>
+          <DialogInput isDialogVisible={dialogVisible}
             title={"Email Change"}
             message={"Enter New Email"}
-            submitInput={ (inputText) => {this.sendInput(inputText)} }
-            closeDialog={ () => {this.closeDialog()}}>
-<DialogInput.Button label="Cancel" onPress={this.closeDialog} />
-          <DialogInput.Button label="Delete" onPress={this.closeDialog} />
+            submitInput={(inputText) => this.sendInput(inputText)}
+            closeDialog={() => this.closeDialog()}>
+            <DialogInput.Button label="Cancel" onPress={() => this.closeDialog()} />
+            <DialogInput.Button label="Delete" onPress={() => this.closeDialog()} />
+          </DialogInput>
 
-</DialogInput>
-
-        <SectionRow text='Account Settings'>
-          <NavigateRow
-            text='Phone Number'
-            iconName='phone'
+          <SectionRow text='Account Settings'>
+            <NavigateRow
+              text='Phone Number'
+              iconName='phone'
             /*onPressCallback={this._navigateToScreen}*/
-          />
-          <NavigateRow
-            text='Email'
-            iconName='envelope'
-            /*onPressCallback={this._navigateToScreen}*/
-          />
-
-          <Button
+            />
+            <NavigateRow
               text='Email'
-            iconName='envelope'
-                  onPress={ () =>this.showDialog()}
-                   title="Change EMail"
-               />
+              iconName='envelope'
+              onPressCallback={() => this.showDialog()}
+            />
+          </SectionRow>
 
+          <SectionRow text='Discovery'>
+            <SwitchRow
+              text="Animal Friendly"
+              iconName="user-secret"
+              _value={animalFriendly}
+              onPressCallback={() => {
+                this.updatePreferences();
+              }}
+              _onValueChange={() => {
+                this.setState({ animalFriendly: !animalFriendly });
+              }}
+            />
+            <SliderRow
+              text={`Maximum Distance ${parseInt(maxDistance)}`}
+              iconName="location-arrow"
+              _color="#dc143c"
+              _min={0}
+              _max={100}
+              value={maxDistance}
+              onPressCallback={() => {
+                this.updatePreferences();
+              }}
+              _onValueChange={value => {
+                this.setState({ maxDistance: value });
+              }}
+            />
+            <SliderRow
+              text={`Maximum Age ${parseInt(maxAge)}`}
+              iconName="hashtag"
+              _color="#dc143c"
+              _min={18}
+              _max={120}
+              onPressCallback={() => {
+                this.updatePreferences();
+              }}
+              _onValueChange={value => {
+                this.setState({ maxAge: value });
+              }} />
 
-        </SectionRow>
+          </SectionRow>
 
-        <SectionRow text='Discovery'>
-          <NavigateRow
-            text='Location'
-            iconName='map-marker'
-            /*onPressCallback={this._navigateToScreen}*/
-          />
-          <SliderRow
-            text="Maximum Distance"
-            iconName="location-arrow"
-            _color="#dc143c"
-            _min={0}
-            _max={100}
-            /*_value={this.state.value}
-            _onValueChange={value => {
-              this.setState({ value });
-            }} */
-          />
-          <NavigateRow
-              text='Show Me'
-            iconName='users'
-            /*onPressCallback={this._navigateToScreen}*/
-          />
-          <SliderRow
-            text="Age Range"
-            iconName="hashtag"
-            _color="#dc143c"
-            _min={18}
-            _max={100}
-            /*_value={this.state.value}
-            _onValueChange={value => {
-              this.setState({ value });
+          <SectionRow text="Usage">
+            <SwitchRow
+              text="Show Me on Finder"
+              iconName="user-secret"
+              _value={showProfile}
+              onPressCallback={() => {
+                this.updatePreferences();
+              }}
+              _onValueChange={() => {
+                this.setState({ showProfile: !showProfile });
+              }}
+            />
+          </SectionRow>
+
+          <SectionRow text="Notifications">
+            <SwitchRow
+              text="Push Notifications"
+              /* Change Finder to App Name*/
+              iconName="user-secret"
+            /*_value={this.state.switch}
+            _onValueChange={() => {
+              this.setState({ switch: !this.state.switch });
             }}*/
-          />
-
-        </SectionRow>
-
-        <SectionRow text="Usage">
-          <SwitchRow
-             text="Show Me on Finder"
-             /* Change Finder to App Name*/
-             iconName="user-secret"
-           /*_value={this.state.switch}
-           _onValueChange={() => {
-             this.setState({ switch: !this.state.switch });
-           }}*/
-          />
-        </SectionRow>
-
-        <SectionRow text="Notifications">
-          <SwitchRow
-             text="Push Notifications"
-             /* Change Finder to App Name*/
-             iconName="user-secret"
-           /*_value={this.state.switch}
-           _onValueChange={() => {
-             this.setState({ switch: !this.state.switch });
-           }}*/
-          />
-        </SectionRow>
-      </ReactNativeSettingsPage>
-    </ScrollView>
-  );
-}
+            />
+          </SectionRow>
+        </ReactNativeSettingsPage>
+      </ScrollView>
+    );
+  }
 }
 
 
