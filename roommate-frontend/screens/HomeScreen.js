@@ -4,27 +4,8 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 
-const demoData = [{
-  "id": 1,
-  "full_name": "Matthew Hertz",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 2,
-  "full_name": "Lorin Demsey",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 3,
-  "full_name": "Naoma Atwood",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 4,
-  "full_name": "Chrisse Poe",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}, {
-  "id": 5,
-  "full_name": "Alphard Reape",
-  "picture": "https://cse.buffalo.edu/~mhertz/MatthewPhoto.jpg"
-}]
+import * as SecureStore from 'expo-secure-store';
+import { determineURL } from '../utils'
 
 const pageBackground = '#4FD0E9'
 
@@ -53,20 +34,36 @@ export default class HomeScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      cards: demoData,
+      cards: [],
       swipedAllCards: false,
       swipeDirection: '',
-      cardIndex: 0
+      cardIndex: 0,
     }
+  }
+
+  async componentDidMount() {
+    console.log(await SecureStore.getItemAsync('token'))
+    fetch(`${determineURL()}/api/v1/matches/`, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${await SecureStore.getItemAsync('token')}`
+      })
+    })
+      .then(response => response.json())
+      .then(matches => {
+        console.log(matches)
+        this.setState({ cards: matches })
+      })
   }
 
   renderCard = (card, index) => {
     return (
       <View style={styles.card}>
-        <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture }}/>
+        <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture_url }}/>
         <View style={styles.cardText}>
-          <Text style={styles.text}>{card.full_name}</Text>
-          <Text>$500 - 4 bed, 4 bath</Text>
+          <Text style={styles.text}>{`${card.first_name} ${card.last_name}`}</Text>
+          <Text>{card.username}</Text>
         </View>
       </View>
     )
@@ -92,7 +89,7 @@ export default class HomeScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.container}>
-          <Swiper
+          {cards && cards.length ? <Swiper
             ref={swiper => {
               this.swiper = swiper
             }}
@@ -115,7 +112,7 @@ export default class HomeScreen extends Component {
             stackSize={3}
             stackSeparation={15}
             animateCardOpacity
-          />
+          /> : <></>}
         </View>
         <View style={styles.buttons}>
           <CircleButton onPress={() => !swipedAllCards && this.swiper.swipeLeft()}>
