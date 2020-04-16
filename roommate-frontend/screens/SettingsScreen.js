@@ -1,5 +1,7 @@
-import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import React, { Component } from "react";
+import { StyleSheet, Text, View, TextInput, Alert, AppRegistry, Button, Image, TouchableOpacity } from 'react-native';
+import DialogInput from 'react-native-dialog-input';
 import ReactNativeSettingsPage, {
   NavigateRow,
   SectionRow,
@@ -20,7 +22,8 @@ export default class SettingsScreen extends React.Component {
       gender: 'MA',
       maxAge: 32,
       maxDistance: 32,
-      token: null
+      token: null,
+      dialogVisible: false
     };
   }
   componentDidMount() {
@@ -51,6 +54,21 @@ export default class SettingsScreen extends React.Component {
           })
       })
   }
+  showDialog = () => {
+    this.setState({ dialogVisible: true });
+  }
+  closeDialog() {
+    this.setState({ dialogVisible: false });
+  }
+  submitInput() {
+    this.setState({ dialogVisible: false });
+  }
+  sendInput(inputText) {
+    if (inputText == null) {
+      this.closeDialog()
+    }
+    console.log("sendInput (EC): " + inputText);
+  }
   updatePreferences = () => {
     const { gender, animalFriendly, maxAge, showProfile, maxDistance, token } = this.state
 
@@ -70,11 +88,20 @@ export default class SettingsScreen extends React.Component {
     })
   }
   render() {
-    const { gender, animalFriendly, maxAge, showProfile, maxDistance } = this.state
+    const { gender, animalFriendly, maxAge, showProfile, maxDistance, dialogVisible } = this.state
 
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <ReactNativeSettingsPage>
+          <DialogInput isDialogVisible={dialogVisible}
+            title={"Email Change"}
+            message={"Enter New Email"}
+            submitInput={(inputText) => this.sendInput(inputText)}
+            closeDialog={() => this.closeDialog()}>
+            <DialogInput.Button label="Cancel" onPress={() => this.closeDialog()} />
+            <DialogInput.Button label="Delete" onPress={() => this.closeDialog()} />
+          </DialogInput>
+
           <SectionRow text='Account Settings'>
             <NavigateRow
               text='Phone Number'
@@ -84,7 +111,7 @@ export default class SettingsScreen extends React.Component {
             <NavigateRow
               text='Email'
               iconName='envelope'
-            /*onPressCallback={this._navigateToScreen}*/
+              onPressCallback={() => this.showDialog()}
             />
           </SectionRow>
 
@@ -160,6 +187,8 @@ export default class SettingsScreen extends React.Component {
   }
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -167,5 +196,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 15,
+    fontSize: 16,
+
   },
+
 });
