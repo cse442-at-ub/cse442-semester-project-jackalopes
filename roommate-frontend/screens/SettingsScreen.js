@@ -1,5 +1,7 @@
-import * as React from 'react';
-import { StyleSheet, Text, Textview, View } from 'react-native';
+
+import React, { Component } from "react";
+import { StyleSheet, Text, View, TextInput,  Alert, AppRegistry, Button, Image, TouchableOpacity} from 'react-native';
+import DialogInput from 'react-native-dialog-input';
 import ReactNativeSettingsPage, {
   NavigateRow,
   SectionRow,
@@ -7,23 +9,69 @@ import ReactNativeSettingsPage, {
   CheckRow,
   SliderRow
 } from 'react-native-settings-page';
+import { RectButton, ScrollView, Dialog, ProgressDialog, ConfirmDialog} from 'react-native-gesture-handler';
+//import { Dialog, ProgressDialog, ConfirmDialog } from "react-native-simple-dialogs";
 import * as WebBrowser from 'expo-web-browser';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
-export default function SettingsScreen() {
+
+export default class SettingsScreen extends Component {
+
+constructor(props){
+    super(props);
+    this.state = {
+      DialogVisible :false,
+    }
+  }
+   showDialog = () => {
+        this.setState({ DialogVisible :true});
+    }
+    closeDialog(){
+      this.setState({  DialogVisible:false });
+    }
+    submitInput()	{
+            this.setState({ DialogVisible:false});
+
+    }
+  sendInput(inputText){
+    if (inputText == null){
+      this.closeDialog()}
+    console.log("sendInput (EC): "+inputText);
+  }
+//
+
+
   /*state = {
       check: false,
       switch: false,
       value: 40
-    };*/
+    };
     _navigateToScreen = () => {
-      console.log(this.props)
       const { navigation } = this.props;
       //navigation.navigate('Your-Screen-Name');
-    };
+    };*/
+
+    render(){
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <ReactNativeSettingsPage>
+    <View style={styles.container}>
+
+      </View>
+
+ <ReactNativeSettingsPage>
+
+ <View style={styles.container}>
+      </View>
+
+<DialogInput DialogVisible={this.state.DialogVisible}
+            title={"Email Change"}
+            message={"Enter New Email"}
+            submitInput={ (inputText) => {this.sendInput(inputText)} }
+            closeDialog={ () => {this.closeDialog()}}>
+<DialogInput.Button label="Cancel" onPress={this.closeDialog} />
+          <DialogInput.Button label="Delete" onPress={this.closeDialog} />
+
+</DialogInput>
+
         <SectionRow text='Account Settings'>
           <NavigateRow
             text='Phone Number'
@@ -33,8 +81,17 @@ export default function SettingsScreen() {
           <NavigateRow
             text='Email'
             iconName='envelope'
-            onPressCallback={this._navigateToScreen}
+            /*onPressCallback={this._navigateToScreen}*/
           />
+
+          <Button
+              text='Email'
+            iconName='envelope'
+                  onPress={ () =>this.showDialog()}
+                   title="Change EMail"
+               />
+
+
         </SectionRow>
 
         <SectionRow text='Discovery'>
@@ -100,6 +157,9 @@ export default function SettingsScreen() {
     </ScrollView>
   );
 }
+}
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -108,5 +168,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 15,
+    fontSize: 16,
+
   },
+
 });
