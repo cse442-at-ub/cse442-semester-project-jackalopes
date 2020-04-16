@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, Textview, View } from 'react-native';
 import ReactNativeSettingsPage, {
   NavigateRow,
   SectionRow,
@@ -15,11 +15,12 @@ export default function SettingsScreen() {
       check: false,
       switch: false,
       value: 40
-    };
+    };*/
     _navigateToScreen = () => {
+      console.log(this.props)
       const { navigation } = this.props;
       //navigation.navigate('Your-Screen-Name');
-    };*/
+    };
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <ReactNativeSettingsPage>
@@ -32,7 +33,7 @@ export default function SettingsScreen() {
           <NavigateRow
             text='Email'
             iconName='envelope'
-            /*onPressCallback={this._navigateToScreen}*/
+            onPressCallback={this._navigateToScreen}
           />
         </SectionRow>
 
