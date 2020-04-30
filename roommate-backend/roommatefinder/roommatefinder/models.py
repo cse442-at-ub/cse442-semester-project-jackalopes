@@ -35,6 +35,9 @@ class Match(models.Model):
     user_two = models.ManyToManyField(
         "User", related_name="user_match+"
     )
+    messages = models.ManyToManyField(
+        "Message", related_name="user_messages+"
+    )
 
 class Message(models.Model):
     match = models.ForeignKey("Match", on_delete=models.CASCADE)

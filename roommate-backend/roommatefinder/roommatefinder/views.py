@@ -1,4 +1,5 @@
-from roommatefinder.models import User
+from roommatefinder.models import User, Match
+from django.db.models import Q
 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -52,7 +53,28 @@ class MatchLike(APIView):
         # Check to see if the other user likes this user back
         # if they do, they match! Do something.
 
-        serializer = CurrentUserSerializer(liked_user)
+        print(liked_user.likes.all())
+        print(current_user.likes.all())
+
+        if current_user in liked_user.likes.all() and liked_user in current_user.likes.all():
+            print("MATCH")
+            m = Match()
+            m.save()
+            m.user_one.add(current_user)
+            m.user_two.add(liked_user)
+            print(m)
+            current_user.matches.add(m)
+            liked_user.matches.add(m)
+
+        # current_user.matches.clear()
+        # liked_user.matches.clear()
+        # current_user.likes.clear()
+        # liked_user.matches.clear()
+        # current_user.save()
+        # liked_user.save()
+        # Match.objects.all().delete()
+
+        serializer = UserProfileSerializer(liked_user)
         return Response({
             'status': 'Success',
             'current_number_likes': current_user.likes.count(),
@@ -128,3 +150,20 @@ class UserProfile(APIView):
             'status': 'Success',
             'updated_user': serializer.data
         })
+
+class UserMatches(APIView):
+    """
+    List all users
+    """
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        current_user = User.objects.get(username=request.user)
+
+        print(current_user)
+        print(current_user.matches)
+        print(current_user.likes)
+
+        serializer = CurrentUserSerializer(current_user)
+        return Response(serializer.data)
