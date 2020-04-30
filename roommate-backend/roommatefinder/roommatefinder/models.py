@@ -35,3 +35,7 @@ class Match(models.Model):
     user_two = models.ManyToManyField(
         "User", related_name="user_match+"
     )
+
+class Message(models.Model):
+    match = models.ForeignKey("Match", on_delete=models.CASCADE)
+    msg_content = models.CharField(max_length=256)
