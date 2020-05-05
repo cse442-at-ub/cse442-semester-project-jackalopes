@@ -18,8 +18,8 @@ class MatchList(APIView):
 
     def get(self, request, format=None):
         current_user = User.objects.get(username=request.user)
-        print(current_user)
-        print([user.id for user in current_user.likes.all()])
+        # print(current_user)
+        # print([user.id for user in current_user.likes.all()])
         users = User.objects.exclude(username=request.user).difference(
             current_user.likes.all()).difference(current_user.dislikes.all())
 
@@ -53,16 +53,16 @@ class MatchLike(APIView):
         # Check to see if the other user likes this user back
         # if they do, they match! Do something.
 
-        print(liked_user.likes.all())
-        print(current_user.likes.all())
+        # print(liked_user.likes.all())
+        # print(current_user.likes.all())
 
         if current_user in liked_user.likes.all() and liked_user in current_user.likes.all():
-            print("MATCH")
+            # print("MATCH")
             m = Match()
             m.save()
             m.user_one.add(current_user)
             m.user_two.add(liked_user)
-            print(m)
+            # print(m)
             current_user.matches.add(m)
             liked_user.matches.add(m)
 
@@ -70,8 +70,8 @@ class MatchLike(APIView):
         # liked_user.matches.clear()
         # current_user.likes.clear()
         # liked_user.matches.clear()
-        # current_user.save()
-        # liked_user.save()
+        current_user.save()
+        liked_user.save()
         # Match.objects.all().delete()
 
         serializer = UserProfileSerializer(liked_user)
@@ -159,11 +159,19 @@ class UserMatches(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
+        current_user = User.objects.get(id=2)
+
+        serializer = CurrentUserSerializer(current_user)
+        return Response(serializer.data)
+
+    def delete(self, request, format=None):
+        body = json.loads(request.body.decode('utf-8'))
         current_user = User.objects.get(username=request.user)
 
-        print(current_user)
-        print(current_user.matches)
-        print(current_user.likes)
+        remove_user_id = body['match_user_id']
+        matches = Match.objects.filter((Q(user_one__id=current_user.id) | Q(user_two__id=remove_user_id)) | (Q(user_one__id=remove_user_id) | Q(user_two__id=current_user.id)))
+
+        matches.delete()
 
         serializer = CurrentUserSerializer(current_user)
         return Response(serializer.data)

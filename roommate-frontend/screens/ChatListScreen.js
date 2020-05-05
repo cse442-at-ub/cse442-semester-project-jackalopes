@@ -1,82 +1,101 @@
 import * as React from 'react';
+import * as SecureStore from 'expo-secure-store';
+
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { determineURL } from '../utils'
+
 
 // UI Elements
-export default function ChatListScreen({navigation}) {
-  const matches = [
-    {
-      photo: require('../assets/images/aaa.gif'),
-      name: "Peter",
-      last_message: "Wow please be my roommate",
-      id: 1,
-    },
-    {
-      photo: require('../assets/images/aaa.gif'),
-      name: "Tristan",
-      last_message: "Stay as far away from me as physically possible",
-      id: 2,
-    },
-    {
-      photo: require('../assets/images/aaa.gif'),
-      name: "Jess",
-      last_message: null,
-      id: 3,
-    },
-    {
-      photo: require('../assets/images/aaa.gif'),
-      name: "Hasan",
-      last_message: "You are such an amazing person",
-      id: 4,
-    },
-    {
-      photo: require('../assets/images/aaa.gif'),
-      name: "Judy",
-      last_message: "The aliens are talking to me please don't let them take me",
-      id: 5,
-    }];
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <ScrollView horizontal={true} style={styles.matchesBarContainer}>
-        {matches.map( (match) => !match.last_message &&  Match(match))}
-      </ScrollView>
-      {matches.map( (match) => match.last_message &&  ChatButton(match))}
-    </ScrollView>
-  );
+export default class ChatListScreen extends React.Component {
+  constructor() {
+    super()
 
-  function Match(match) {
-    return (
-      <RectButton key={match.id} style={styles.matchContainer}
-            onPress={() => navigation.navigate('Chat', {match: match})}>
-        <View style={styles.matchPhotoContainer}>
-          <Image style = {styles.matchPhoto}
-                 source={match.photo}
-          />
-        </View>
-        <Text style={styles.matchName}>{match.name}</Text>
-      </RectButton>
-    );
+    this.state = {
+      matches: [],
+      token: null
+    }
   }
+  componentDidMount() {
+    this.props.navigation.addListener('focus', () => {
+      this.reloadMessages()
+    });
 
-  function ChatButton(match) {
+    this.reloadMessages()
+  }
+  reloadMessages = async () => {
+    const token = token || await SecureStore.getItemAsync('token')
+    fetch(`${determineURL()}/api/v1/user/matches/`, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`
+      })
+    })
+      .then(response => response.json())
+      .then(json => {
+        const myUserId = json.id;
+        this.setState({ matches: json.matches.map(group => {
+          if (group.user_one[0].id === myUserId) {
+            return group.user_one[0]
+          } else if (group.user_two[0].id === myUserId) {
+            return group.user_two[0]
+          }
+        }), token })
+      })
+  }
+  render() {
+    const { navigation } = this.props
+    const { matches } = this.state
+
+    console.log(matches)
+
     return (
-      <RectButton key={match.id} style={styles.match}
-                  onPress={() => navigation.navigate('Chat', {match: match})}>
-        <View style={styles.matchPhotoContainer}>
-          <Image style = {styles.matchPhoto}
-                 source={match.photo}
-          />
-        </View>
-        <View style={styles.matchTextContainer}>
-          <Text style={styles.matchNameChat}>{match.name}</Text>
-          <Text numberOfLines={1} style={[styles.messageText, {flexDirection: 'column'}]}>
-            {match.last_message}
-          </Text>
-        </View>
-      </RectButton>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <ScrollView horizontal={true} style={styles.matchesBarContainer}>
+          {/* {matches.map((match) => !match.last_message && Match(match))} */}
+          {Match({
+            picture_url: require('../assets/images/aaa.gif'),
+            name: "New Matches",
+            id: -1,
+          })}
+        </ScrollView>
+        {matches.map((match) => ChatButton(match))}
+      </ScrollView>
     );
+
+    function Match(match) {
+      return (
+        <RectButton key={match.id} style={styles.matchContainer}
+          onPress={() => navigation.navigate('Chat', { match: match })}>
+          <View style={styles.matchPhotoContainer}>
+            <Image style={styles.matchPhoto}
+              source={match.picture_url}
+            />
+          </View>
+          <Text style={styles.matchName}>{match.name}</Text>
+        </RectButton>
+      );
+    }
+
+    function ChatButton(match) {
+      return (
+        <RectButton key={match.id} style={styles.match}
+          onPress={() => navigation.navigate('Chat', { match: match })}>
+          <View style={styles.matchPhotoContainer}>
+            <Image style={styles.matchPhoto}
+              source={{uri: match.picture_url}}
+            />
+          </View>
+          <View style={styles.matchTextContainer}>
+            <Text style={styles.matchNameChat}>{`${match.first_name} ${match.last_name}`}</Text>
+            <Text numberOfLines={1} style={[styles.messageText, { flexDirection: 'column' }]}>
+              Click to view messages with {match.first_name} {match.last_name}!
+            </Text>
+          </View>
+        </RectButton>
+      );
+    }
   }
 }
 
