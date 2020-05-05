@@ -1,4 +1,4 @@
-const currentBackend = 'https://ee2c1a94.ngrok.io' // one of 'local', 'cheshire', 'genymotion'
+const currentBackend = 'cheshire' // one of 'local', 'cheshire', 'genymotion'
 export const determineURL = () => {
   switch (currentBackend) {
     case 'cheshire': {

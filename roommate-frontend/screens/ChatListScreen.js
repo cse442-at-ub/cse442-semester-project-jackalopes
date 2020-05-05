@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as SecureStore from 'expo-secure-store';
 
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { RectButton, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { ConfirmDialog } from "react-native-simple-dialogs";
 import { determineURL } from '../utils'
 
 
@@ -24,7 +25,7 @@ export default class ChatListScreen extends React.Component {
     this.reloadMessages()
   }
   reloadMessages = async () => {
-    const token = token || await SecureStore.getItemAsync('token')
+    const token = this.state.token || await SecureStore.getItemAsync('token')
     fetch(`${determineURL()}/api/v1/user/matches/`, {
       method: 'GET',
       headers: new Headers({
@@ -35,13 +36,43 @@ export default class ChatListScreen extends React.Component {
       .then(response => response.json())
       .then(json => {
         const myUserId = json.id;
-        this.setState({ matches: json.matches.map(group => {
-          if (group.user_one[0].id === myUserId) {
-            return group.user_one[0]
-          } else if (group.user_two[0].id === myUserId) {
-            return group.user_two[0]
-          }
-        }), token })
+        this.setState({
+          matches: json.matches.map(group => {
+            if (group.user_one[0].id === myUserId) {
+              return group.user_one[0]
+            } else if (group.user_two[0].id === myUserId) {
+              return group.user_two[0]
+            }
+          }), token
+        })
+      })
+  }
+  onDeleteClick = (clickedMatch) => {
+    this.setState({
+      confirmVisible: true,
+      currentClick: clickedMatch
+    })
+  }
+  unmatchPerson = async () => {
+    const { currentClick, token } = this.state
+    const sessionToken = token || await SecureStore.getItemAsync('token')
+    fetch(`${determineURL()}/api/v1/user/matches/`, {
+      method: 'DELETE',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${sessionToken}`
+      }),
+      body: JSON.stringify({
+        match_user_id: currentClick
+      })
+    })
+      .then(response => response.json())
+      .then(() => {
+        this.setState({
+          confirmVisible: false,
+          currentClick: null
+        })
+        this.reloadMessages()
       })
   }
   render() {
@@ -51,17 +82,33 @@ export default class ChatListScreen extends React.Component {
     console.log(matches)
 
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <ScrollView horizontal={true} style={styles.matchesBarContainer}>
-          {/* {matches.map((match) => !match.last_message && Match(match))} */}
-          {Match({
-            picture_url: require('../assets/images/aaa.gif'),
-            name: "New Matches",
-            id: -1,
-          })}
+      <React.Fragment>
+        <ConfirmDialog
+          title="Confirm Unmatch"
+          message="Are you sure you want to unmatch with this potential roommate?"
+          visible={this.state.confirmVisible}
+          onTouchOutside={() => this.setState({ confirmVisible: false, currentClick: null })}
+          positiveButton={{
+            title: "YES",
+            onPress: () => this.unmatchPerson()
+          }}
+          negativeButton={{
+            title: "NO",
+            onPress: () => this.setState({ confirmVisible: false, currentClick: null })
+          }}
+        />
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          <ScrollView horizontal={true} style={styles.matchesBarContainer}>
+            {/* {matches.map((match) => !match.last_message && Match(match))} */}
+            {Match({
+              picture_url: require('../assets/images/aaa.gif'),
+              name: "New Matches",
+              id: -1,
+            })}
+          </ScrollView>
+          {matches.map((match) => ChatButton(match, this.onDeleteClick))}
         </ScrollView>
-        {matches.map((match) => ChatButton(match))}
-      </ScrollView>
+      </React.Fragment>
     );
 
     function Match(match) {
@@ -78,22 +125,24 @@ export default class ChatListScreen extends React.Component {
       );
     }
 
-    function ChatButton(match) {
+    function ChatButton(match, onDeleteClick) {
       return (
-        <RectButton key={match.id} style={styles.match}
-          onPress={() => navigation.navigate('Chat', { match: match })}>
-          <View style={styles.matchPhotoContainer}>
-            <Image style={styles.matchPhoto}
-              source={{uri: match.picture_url}}
-            />
-          </View>
-          <View style={styles.matchTextContainer}>
-            <Text style={styles.matchNameChat}>{`${match.first_name} ${match.last_name}`}</Text>
-            <Text numberOfLines={1} style={[styles.messageText, { flexDirection: 'column' }]}>
-              Click to view messages with {match.first_name} {match.last_name}!
+        <TouchableOpacity key={match.id} onPress={() => navigation.navigate('Chat', { match: match })} onLongPress={() => onDeleteClick(match.id)}>
+          <RectButton style={styles.match}
+          >
+            <View style={styles.matchPhotoContainer}>
+              <Image style={styles.matchPhoto}
+                source={{ uri: match.picture_url }}
+              />
+            </View>
+            <View style={styles.matchTextContainer}>
+              <Text style={styles.matchNameChat}>{`${match.first_name} ${match.last_name}`}</Text>
+              <Text numberOfLines={1} style={[styles.messageText, { flexDirection: 'column' }]}>
+                Click to view messages with {match.first_name} {match.last_name}!
             </Text>
-          </View>
-        </RectButton>
+            </View>
+          </RectButton>
+        </TouchableOpacity>
       );
     }
   }

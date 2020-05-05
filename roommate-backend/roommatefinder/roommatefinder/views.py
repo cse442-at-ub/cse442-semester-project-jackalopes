@@ -66,13 +66,8 @@ class MatchLike(APIView):
             current_user.matches.add(m)
             liked_user.matches.add(m)
 
-        # current_user.matches.clear()
-        # liked_user.matches.clear()
-        # current_user.likes.clear()
-        # liked_user.matches.clear()
         current_user.save()
         liked_user.save()
-        # Match.objects.all().delete()
 
         serializer = UserProfileSerializer(liked_user)
         return Response({
@@ -159,7 +154,7 @@ class UserMatches(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        current_user = User.objects.get(id=2)
+        current_user = User.objects.get(username=request.user)
 
         serializer = CurrentUserSerializer(current_user)
         return Response(serializer.data)
