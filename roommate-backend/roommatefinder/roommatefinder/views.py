@@ -183,3 +183,18 @@ class Messages(APIView):
         serializer = MatchMessageSerializer(match)
         #serializer = serializers.serialize('json', messages)
         return Response(serializer.data)
+
+    def post(self, request, format=None):
+        body = json.loads(request.body.decode('utf-8'))
+        user = User.objects.get(username=request.user)
+        match_obj = Match.objects.get(id=body["match_id"])
+        content = body["content"]
+
+        message = Message.objects.create(match=match_obj, sender=user, msg_content=content)
+        match_obj.messages.add(message)
+
+        serializer = MessageSerializer()
+        return Response({
+            'status': 'Success',
+            'content': content
+        })
