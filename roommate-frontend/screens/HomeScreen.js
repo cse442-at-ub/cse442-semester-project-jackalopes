@@ -41,26 +41,73 @@ export default class HomeScreen extends Component {
     }
   }
 
-  async componentDidMount() {
-    console.log(await SecureStore.getItemAsync('token'))
+  componentDidMount() {
+    this.props.navigation.addListener('focus', () => {
+      this.reloadCards()
+    });
+
+    this.reloadCards()
+  }
+
+  reloadCards = async () => {
+    const token = await SecureStore.getItemAsync('token')
     fetch(`${determineURL()}/api/v1/matches/`, {
       method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json',
-        'Authorization': `Token ${await SecureStore.getItemAsync('token')}`
+        'Authorization': `Token ${token}`
       })
     })
       .then(response => response.json())
       .then(matches => {
         console.log(matches)
-        this.setState({ cards: matches })
+        this.setState({ cards: matches, token })
+        if (this.swiper) this.swiper.setCardIndex(0)
+      })
+  }
+
+  likeUser = (index) => {
+    const { cards, token } = this.state;
+
+    fetch(`${determineURL()}/api/v1/like/`, {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`
+      }),
+      body: JSON.stringify({
+        user_liked: cards[index].id
+      })
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+      })
+  }
+
+  dislikeUser = (index) => {
+    const { token } = this.state;
+
+    fetch(`${determineURL()}/api/v1/dislike/`, {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`
+      }),
+      body: JSON.stringify({
+        user_disliked: cards[index].id
+      })
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
       })
   }
 
   renderCard = (card, index) => {
     return (
       <View style={styles.card}>
-        <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture_url }}/>
+        <Image style={{ width: '100%', height: '100%' }} source={{ uri: card.picture_url }} />
         <View style={styles.cardText}>
           <Text style={styles.text}>{`${card.first_name} ${card.last_name}`}</Text>
           <Text>{card.username}</Text>
@@ -69,8 +116,9 @@ export default class HomeScreen extends Component {
     )
   };
 
-  onSwiped = (type) => {
+  onSwiped = (type, card) => {
     console.log(`on swiped ${type}`)
+    console.log(card)
   }
 
   onSwipedAllCards = () => {
@@ -94,11 +142,11 @@ export default class HomeScreen extends Component {
               this.swiper = swiper
             }}
             style={styles.swiper}
-            onSwiped={() => this.onSwiped('general')}
-            onSwipedLeft={() => this.onSwiped('left')}
-            onSwipedRight={() => this.onSwiped('right')}
-            onSwipedTop={() => this.onSwiped('top')}
-            onSwipedBottom={() => this.onSwiped('bottom')}
+            // onSwiped={() => this.onSwiped('general')}
+            onSwipedLeft={(index) => this.dislikeUser(index)}
+            onSwipedRight={(index) => this.likeUser(index)}
+            // onSwipedTop={() => this.onSwiped('top')}
+            // onSwipedBottom={() => this.onSwiped('bottom')}
             onTapCard={this.swipeLeft}
             cards={cards}
             cardIndex={cardIndex}
