@@ -1,4 +1,4 @@
-from roommatefinder.models import User, Match
+from roommatefinder.models import *
 from django.db.models import Q
 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from roommatefinder.serializers import CurrentUserSerializer, UserProfileSerializer
+from roommatefinder.serializers import *
 import json
 
 class MatchList(APIView):
@@ -169,4 +169,17 @@ class UserMatches(APIView):
         matches.delete()
 
         serializer = CurrentUserSerializer(current_user)
+
+class Messages(APIView):
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        match_id = request.GET.get("match_id")
+        match = Match.objects.filter(id=match_id)[0]
+        # messages = match.messages.all()
+        # print(messages)
+        serializer = MatchMessageSerializer(match)
+        #serializer = serializers.serialize('json', messages)
         return Response(serializer.data)

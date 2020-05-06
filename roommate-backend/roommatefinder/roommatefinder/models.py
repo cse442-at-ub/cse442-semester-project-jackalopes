@@ -41,4 +41,5 @@ class Match(models.Model):
 
 class Message(models.Model):
     match = models.ForeignKey("Match", on_delete=models.CASCADE)
+    sender = models.ForeignKey("User", on_delete=models.CASCADE, related_name="sender")
     msg_content = models.CharField(max_length=256)
