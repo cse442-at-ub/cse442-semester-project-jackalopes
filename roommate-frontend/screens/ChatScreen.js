@@ -1,48 +1,69 @@
 import * as React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import * as SecureStore from 'expo-secure-store';
+import { StyleSheet  } from 'react-native';
+
 import { GiftedChat } from 'react-native-gifted-chat';
 
-class ChatModule extends React.Component {
-  state = {
-    messages: [
-      {
-        _id: 2,
-        text: 'Sample message',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'Person',
-          avatar: require('../assets/images/aaa.gif'),
-        }
-      },
-    ]
-  };
+import { determineURL } from '../utils'
 
-  onSend(messages = []) {
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages)
-    }));
+export default class ChatScreen extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      messages: [],
+      matchID: props.route.params.match.id,
+      currentID: null
+    };
   }
 
+  componentDidMount = () => {
+    this.reloadMessages()
+  }
+
+  reloadMessages = async () => {
+
+    const { matchID } = this.state
+    const sessionToken = await SecureStore.getItemAsync('token')
+
+    fetch(`${determineURL()}/api/v1/messages?match_id=${matchID}`, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${sessionToken}`
+      })
+    })
+      .then(response => response.json())
+      .then((json) => {
+        console.log(json)
+        const { messages } = json
+
+        this.setState({
+          currentID: json.id,
+          messages: messages.map(m => ({
+            _id: m.id,
+            text: m.msg_content,
+            user: {
+              _id: m.sender.id,
+              name: m.sender.first_name,
+              avatar: m.sender.picture_url
+            },
+          }))
+        })
+      })
+  }
+  
   render() {
-    return(
-        <GiftedChat
-          messages={this.state.messages}
-          onSend={messages => this.onSend(messages)}
-          user={{_id: 1,}}
-        />
+    const { currentID, messages } = this.state
+    return (
+      <GiftedChat
+        messages={messages}
+        onSend={messages => this.onSend(messages)}
+        user={{ _id: currentID, }}
+        inverted={false}
+      />
     );
   }
-}
-
-// UI Elements
-export default function ChatScreen({navigation, route}) {
-  return (
-    <ChatModule/>
-  );
 }
 
 const styles = StyleSheet.create({

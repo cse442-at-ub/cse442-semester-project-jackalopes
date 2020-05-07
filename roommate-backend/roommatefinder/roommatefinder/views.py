@@ -175,9 +175,8 @@ class Messages(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        body = json.loads(request.body.decode('utf-8'))
         user = request.user
-        match_id = body["match_id"]
+        match_id = request.GET.get("match_id")
         match = Match.objects.filter(id=match_id)[0]
         # messages = match.messages.all()
         # print(messages)
