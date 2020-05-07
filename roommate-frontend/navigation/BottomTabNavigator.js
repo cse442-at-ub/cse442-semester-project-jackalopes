@@ -11,7 +11,8 @@ import ChatListScreen from '../screens/ChatListScreen';
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Finder';
 
-export default function BottomTabNavigator({ navigation,route }) {
+
+export default function BottomTabNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
   // currently active tab. Learn more in the documentation:
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
@@ -21,16 +22,21 @@ export default function BottomTabNavigator({ navigation,route }) {
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
       <BottomTab.Screen
         name="Home"
-          component={HomeScreen}
+        component={HomeScreen}
         options={{
           title: 'Finder',
           tabBarVisible: true,
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-home" />,
+        }}
+        listeners={{
+          tabPress: (e) => {
+            console.log(e.target)
+          },
         }}
       />
       <BottomTab.Screen
         name="Account"
-          component={SettingsScreen}
+        component={SettingsScreen}
         options={{
           title: 'Settings',
           tabBarVisible: true,
@@ -45,14 +51,14 @@ export default function BottomTabNavigator({ navigation,route }) {
           tabBarVisible: true,
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
         }}
-        />
+      />
       <BottomTab.Screen
         name="Matches"
         component={ChatListScreen}
         options={{
-            title: 'Matches',
-            tabBarVisible: true,
-            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
+          title: 'Matches',
+          tabBarVisible: true,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />
         }}
       />
     </BottomTab.Navigator>
