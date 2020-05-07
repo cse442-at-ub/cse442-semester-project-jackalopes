@@ -52,6 +52,27 @@ export default class ChatScreen extends React.Component {
         })
       })
   }
+
+  onSend = async (messages = []) => {
+    const { matchID } = this.state
+    const sessionToken = await SecureStore.getItemAsync('token')
+
+    fetch(`${determineURL()}/api/v1/messages/`, {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${sessionToken}`
+      }),
+      body: JSON.stringify({
+        match_id: matchID,
+        content: messages[0].text
+      })
+    })
+      .then(response => response.json())
+      .then(() => {
+        this.reloadMessages()
+      })
+    }
   
   render() {
     const { currentID, messages } = this.state
